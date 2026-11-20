@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>UME • Unidad Médica Educativa (UNCAUS) | Sistema de RR.HH.</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<style>
+:root{--bg:#f5f8fa;--card:#fff;--tx:#17262f;--mut:#5d7280;--pr:#0b6e7f;--prt:#fff;--bd:#d5e0e6;--ok:#1b7f4b;--wa:#b7791f;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1a20;--card:#17262f;--tx:#e6eef2;--mut:#9ab0bc;--pr:#3fb6c9;--prt:#06232a;--bd:#2a3e49;--ok:#4cc58a;--wa:#e0a84a}}
+:root[data-theme="dark"]{--bg:#0f1a20;--card:#17262f;--tx:#e6eef2;--mut:#9ab0bc;--pr:#3fb6c9;--prt:#06232a;--bd:#2a3e49;--ok:#4cc58a;--wa:#e0a84a}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+h1,h2,h3{line-height:1.2;margin:.2em 0 .5em}h1{font-size:1.5rem}h2{font-size:1.25rem}h3{font-size:1.05rem}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:16px;margin:12px 0}
+.mut{color:var(--mut);font-size:.9rem}
+button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--bd);background:var(--card);color:var(--tx);padding:9px 14px}
+button.p{background:var(--pr);color:var(--prt);border-color:var(--pr);font-weight:600}
+input,select,textarea{font:inherit;width:100%;padding:9px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx)}
+label{display:block;font-size:.85rem;color:var(--mut);margin:0 0 10px}
+.g{display:grid;gap:0 12px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+#login{max-width:420px;margin:8vh auto;padding:16px}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--pr);color:var(--prt);padding:10px 14px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--pr);z-index:10}
+header button{background:transparent;color:var(--prt);border-color:currentColor;padding:5px 10px}
+nav{display:flex;gap:6px;overflow-x:auto;padding:10px 12px;background:var(--card);border-bottom:1px solid var(--bd)}
+nav button{white-space:nowrap}nav button.on{background:var(--pr);color:var(--prt);border-color:var(--pr)}
+main{max-width:980px;margin:0 auto;padding:4px 14px 40px}
+.kp{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.kp b{font-size:1.8rem;color:var(--pr);display:block}
+.tw{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:.9rem}th,td{padding:8px;border-bottom:1px solid var(--bd);text-align:left;vertical-align:top}
+.tag{padding:2px 8px;border-radius:99px;border:1px solid var(--bd);font-size:.78rem;white-space:nowrap}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}.hide{display:none}
+@media print{header,nav,.np{display:none}}
+</style></head><body>
+
+<div id="login" class="card">
+<p class="mut">Práctica Profesionalizante II (2026) • Instituto Nuestra Señora de la Misericordia</p>
+<h1>UME • Unidad Médica Educativa</h1>
+<p class="mut">UNCAUS • Cmte. Fernández 755, Sáenz Peña</p>
+<div id="setup" class="hide"><h3>Primer ingreso: crear administrador</h3><p class="mut">Todavía no hay usuarios. Creá la cuenta de RR.HH. que va a administrar el portal.</p><label>Nombre y apellido<input id="sn" placeholder="Ej: Laura Pérez"></label><label>Correo electrónico<input id="se" type="email" placeholder="Ej: rrhh@ume.uncaus.edu.ar"></label><label>Contraseña (mín. 8 caracteres)<input id="sp" type="password"></label><button class="p" style="width:100%" onclick="setupAdmin()">Crear administrador y entrar</button></div>
+<div id="chg" class="hide"><h3>Elegí tu contraseña</h3><p class="mut">Por seguridad, reemplazá la contraseña temporal.</p><label>Nueva contraseña (mín. 8 caracteres)<input id="cp" type="password"></label><button class="p" style="width:100%" onclick="cambiarPw()">Guardar y entrar</button><p id="ce" class="hide" style="color:#c0392b">Mínimo 8 caracteres.</p></div>
+<div id="lform"><h3>Iniciar sesión</h3>
+<label>Correo institucional<input id="lu" type="email"></label>
+<label>Contraseña<input id="lp" type="password"></label>
+<p id="le" class="hide" style="color:#c0392b">Credenciales incorrectas.</p>
+<button class="p" style="width:100%" onclick="login()">Ingresar</button></div>
+<hr style="border:0;border-top:1px solid var(--bd);margin:16px 0"><button style="width:100%" onclick="demoMode()">Ver en modo presentación</button><p class="mut" style="text-align:center">Datos de ejemplo: no se guardan.</p>
+</div>
+
+<div id="deny" class="card hide" style="max-width:420px;margin:8vh auto"><h2>Sin acceso</h2><p>Tu usuario no está habilitado en el portal de la UME. Pedile a RR.HH. que te agregue en Usuarios.</p></div>
+<div id="app" class="hide">
+<header><div><b>UME • Área de RR.HH.</b><div id="sub" style="font-size:.75rem;opacity:.85">Sáenz Peña, Chaco</div></div><button onclick="location.reload()">Salir</button></header>
+<nav id="nav"></nav>
+<main>
+
+<section id="portada">
+<p class="mut">Práctica Profesionalizante II (2026) • Instituto Nuestra Señora de la Misericordia</p>
+<h1>Plataforma Web de RR.HH. para UME (UNCAUS)</h1>
+<div class="card"><h3>Problemática detectada en pasantías</h3><p>Dispersión de legajos del personal, carga manual repetitiva, falta de estandarización de puestos por servicio y demoras en el seguimiento de postulantes e inducción.</p>
+<h3>Propuesta</h3><p>Una aplicación web autónoma, exportable a CSV, que ordene la gestión de RR.HH. La tecnología es soporte operativo: la entrevista presencial y el criterio humano se mantienen.</p></div>
+<div class="kp">
+<div class="card">Legajos<b id="k-leg">0</b><span class="mut">Cargados</span></div>
+<div class="card">Puestos<b id="k-pue">0</b><span class="mut">Relevados</span></div>
+<div class="card">CVs<b id="k-cv">0</b><span class="mut">En filtración</span></div>
+<div class="card">Inducción<b id="k-ind">0</b><span class="mut">Acompañamiento 30 días</span></div>
+</div>
+<div class="row"><button class="p" onclick="go('leg')">Cargar un legajo</button><button onclick="go('nom')">Ver Nóminas</button></div>
+</section>
+
+<section id="leg" class="hide"><h2>Carga de Legajos</h2><p class="mut">Alta de datos personales y contractuales. Se refleja al instante en Nóminas.</p><div class="card" id="f-leg"></div></section>
+
+<section id="nom" class="hide"><h2>Nóminas</h2><p class="mut">Visualización, auditoría y exportación de todos los registros.</p>
+<div class="row np"><select id="fo" onchange="tabla()" style="width:auto"><option value="">Todos</option><option value="leg">Solo legajos</option><option value="pue">Solo puestos</option></select><button class="p" onclick="csv()">Exportar CSV</button><button onclick="print()">Imprimir</button></div>
+<div class="card tw"><table><thead><tr><th>Origen</th><th>Titular / Puesto</th><th>Área</th><th>Detalle</th><th>Estado</th><th></th></tr></thead><tbody id="tb"></tbody></table><p id="vac" class="mut">Aún no hay registros.</p></div></section>
+
+<section id="pue" class="hide"><h2>Relevamiento de Puestos</h2><p class="mut">Estandarización de perfiles asistenciales y administrativos.</p><div class="card" id="f-pue"></div></section>
+
+<section id="cv" class="hide"><h2>Filtración de CVs</h2><p class="mut">Valoración equilibrada: idoneidad técnica + competencias humanas.</p><div class="card"><h3>🤖 Bot de filtración de CVs</h3><p class="mut">Compara el CV con las tareas, los requisitos técnicos y los valores del puesto cargado en Relevamiento de Puestos.</p><label>Puesto relevado<select id="bp"></select></label><label>Subí el CV (PDF, Word .docx o TXT)<input id="bf" type="file" accept=".pdf,.docx,.txt,.md" onchange="leerCV(this.files[0])"></label><p id="bm" class="mut"></p><label>O pegá el texto del CV acá<textarea id="bt" rows="6"></textarea></label><div class="row"><button class="p" onclick="botRun()">Analizar CV</button></div><div id="br"></div></div><div class="card" id="f-cv"></div><div id="l-cv"></div></section>
+
+<section id="ind" class="hide"><h2>Plan de Inducción y Bienvenida</h2><p class="mut">Acompañamiento estructurado para nuevos colaboradores.</p><div class="card" id="f-ind"></div><div id="l-ind"></div></section>
+
+<section id="usr" class="hide"><h2>Usuarios del Portal</h2><p class="mut">Creá usuarios con correo y contraseña. Cada persona ingresa con esos datos en la pantalla de inicio.</p>
+<div class="card"><h3>Crear usuario</h3><div class="g"><label>Nombre y apellido<input id="un" placeholder="Ej: Laura Pérez"></label><label>Correo electrónico<input id="ue" type="email" placeholder="Ej: lperez@ume.uncaus.edu.ar"></label><label>Contraseña (mín. 8 caracteres)<input id="up" placeholder="Ej: Ume2026!seg"></label><label>Rol<select id="ur"><option>Personal</option><option>Jefatura</option><option>RR.HH.</option></select></label></div><button class="p" onclick="crearU()">Crear usuario</button><p class="mut">Entregá el correo y la contraseña a la persona. Desde ese momento puede ingresar en la pantalla de inicio.</p></div>
+<div class="card"><h3>Usuarios habilitados</h3><div id="ulist"></div></div></section>
+<section id="guia" class="hide"><h2>Guía de Uso</h2>
+<div class="card"><ol><li><b>Carga de Legajos:</b> completá el formulario y guardá.</li><li><b>Nóminas:</b> revisá, filtrá, exportá a CSV o imprimí.</li><li><b>Relevamiento de Puestos:</b> las jefaturas describen cada perfil.</li><li><b>Filtración de CVs:</b> cargá postulantes y citá a entrevista presencial.</li><li><b>Plan de Inducción:</b> checklist de bienvenida con constancia imprimible.</li></ol>
+<p class="mut">En el portal en línea los datos se guardan en una base compartida: todo el personal habilitado ve lo mismo. En cada formulario, el botón “Completar con ejemplo” muestra qué escribir.</p>
+</div></section>
+
+<section id="desp" class="hide"><h2>Despliegue Online</h2>
+<div class="card"><h3>Opción 1: Netlify Drop</h3><p>Guardá este archivo como <code>index.html</code>, entrá a drop.netlify.com y arrastralo. Obtenés una URL pública al instante.</p></div>
+<div class="card"><h3>Opción 2: Vercel / GitHub Pages</h3><p>Subí el archivo a un repositorio de GitHub e importalo desde vercel.com.</p></div>
+<div class="card"><h3>Opción 3: Servidor intranet UME</h3><p>Alojalo en el servidor web local (Apache / IIS) para máxima privacidad.</p></div></section>
+
+</main>
+<p class="mut" style="text-align:center;padding:0 14px 24px">UME • Cmte. Fernández 755, Sáenz Peña, Chaco • Tel: (0364) 442-6628</p>
+</div>
+
+<script>
+const AREAS=["Guardia 24hs","Internación","Alta Complejidad (UTI / Quirófano)","Consultorios Externos","Residencias Médicas y Docencia","Administración / Facturación e ISSUNCAUS","Diagnóstico por Imágenes y Laboratorio"];
+const TURNOS=["Mañana (07:00 - 14:00)","Tarde (14:00 - 21:00)","Noche / Guardia Activa","Turnos Rotativos"];
+const OS=["ISSUNCAUS","OSDE / Prepaga","ATSA / Sanidad","INSSSEP","Otra / En trámite"];
+const EST=["Legajo Completo y Verificado","Pendiente de Revisión RR.HH.","Documentación Parcial"];
+const F={
+leg:[["nombre","Nombre y apellido *","text"],["dni","DNI *","text"],["cuil","CUIL *","text"],["tel","Teléfono celular *","tel"],["mail","Correo electrónico *","email"],["area","Área / servicio *",AREAS],["puesto","Puesto / función *","text"],["mat","Matrícula profesional","text"],["turno","Turno habitual *",TURNOS],["ingreso","Fecha de ingreso *","date"],["os","Obra social *",OS],["emerg","Contacto de emergencia *","text"],["estado","Estado documental *",EST]],
+pue:[["nombre","Nombre del puesto *","text"],["area","Área / sector *",AREAS],["reporta","Reporta a *","text"],["objetivo","Objetivo general *","text"],["tareas","Tareas principales *","area"],["req","Requisitos técnicos excluyentes *","area"],["comp","Competencias humanas y valores *","area"]],
+cv:[["nombre","Nombre y apellido *","text"],["cel","Celular *","tel"],["mail","Correo *","email"],["puesto","Puesto al que postula *","text"],["ant","Formación y antecedentes *","area"],["tec","Puntaje técnico (1-10) *","num"],["hum","Puntaje humano (1-10) *","num"],["estado","Estado",["Preseleccionado","Entrevista agendada","Banco de datos"]]],
+ind:[["nombre","Nombre del colaborador *","text"],["puesto","Puesto y área *","text"],["ingreso","Fecha de ingreso *","date"],["tutor","Tutor asignado *","text"]]};
+const CHK=["Recorrido por las instalaciones","Normas de bioseguridad","Entrega de credencial y uniforme","Presentación al equipo y tutor","Revisión de legajo y matrícula","Seguimiento a los 30 días"];
+const NAV=[["portada","Portada"],["leg","Carga de Legajos"],["nom","Nóminas"],["pue","Relevamiento de Puestos"],["cv","Filtración de CVs"],["ind","Plan de Inducción"],["usr","Crear Usuarios"],["guia","Guía de Uso"],["desp","Despliegue Online"]];
+let D={leg:[],pue:[],cv:[],ind:[],usr:[]},DB=null,U=null,ME=null,ADMIN=false,ROL="",LOADED=false,DEMO=false,PEND=null;
+try{D=Object.assign(D,JSON.parse(localStorage.getItem("ume")||"{}"))}catch(e){}
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function save(){try{localStorage.setItem("ume",JSON.stringify(D))}catch(e){}}
+async function put(k,r){if(DEMO)return;if(!DB){save();return}try{await DB.collection(k).doc(String(r.id)).set(r)}catch(e){alert("No se pudo guardar. Pedí permiso de edición de contenido al administrador.")}}
+async function rm(k,id){if(DEMO)return;if(!DB){save();return}try{await DB.collection(k).doc(String(id)).delete()}catch(e){alert("No tenés permiso para eliminar.")}}
+function enter(){$("login").classList.add("hide");$("app").classList.remove("hide");go("portada")}
+function go(id){NAV.forEach(n=>$(n[0]).classList.toggle("hide",n[0]!==id));[...$("nav").children].forEach((b,i)=>b.classList.toggle("on",NAV[i][0]===id));scrollTo(0,0)}
+$("nav").innerHTML=NAV.map(n=>`<button onclick="go('${n[0]}')">${n[1]}</button>`).join("");
+function buildForm(k){
+ $("f-"+k).innerHTML=`<div class="g">`+F[k].map(f=>{const[n,l,t]=f;let i;
+  if(Array.isArray(t))i=`<select name="${n}">${t.map(o=>`<option>${esc(o)}</option>`).join("")}</select>`;
+  else if(t==="area")i=`<textarea name="${n}" rows="3"></textarea>`;
+  else if(t==="num")i=`<input name="${n}" type="number" min="1" max="10">`;
+  else i=`<input name="${n}" type="${t}">`;
+  return `<label>${l}${i}</label>`}).join("")+`</div><div class="row"><button onclick="ej('${k}')">Completar con ejemplo</button><button onclick="clearF('${k}')">Limpiar</button><button class="p" onclick="add('${k}')">Guardar</button></div>`}
+function clearF(k){$("f-"+k).querySelectorAll("input,textarea").forEach(e=>e.value="")}
+function add(k){
+ const r={id:Date.now()};
+ for(const[n,l,t]of F[k]){const e=$("f-"+k).querySelector(`[name=${n}]`);r[n]=e.value.trim();
+  if(l.includes("*")&&!r[n]){e.focus();alert("Completá: "+l.replace(" *",""));return}}
+ if(k==="cv"&&(r.tec<1||r.tec>10||r.hum<1||r.hum>10)){alert("Los puntajes van de 1 a 10");return}
+ if(k==="ind")r.chk=[];
+ if(!DB)D[k].unshift(r);put(k,r);
+ if(k==="leg"){const i={id:r.id+1,nombre:r.nombre,puesto:r.puesto+" • "+r.area,ingreso:r.ingreso,tutor:"A designar",chk:[]};if(!DB)D.ind.unshift(i);put("ind",i)}
+ clearF(k);render();
+ if(k==="leg")alert("Guardado. Ya figura en Nóminas y se creó su plan de inducción.");else if(k==="pue")alert("Guardado. Ya figura en Nóminas.")}
+function del(k,id){if(confirm("¿Eliminar registro?")){if(!DB)D[k]=D[k].filter(r=>r.id!==id);rm(k,id);render()}}
+function tabla(){
+ const fo=$("fo").value;
+ const rows=[...(fo!=="pue"?D.leg.map(r=>["leg","Legajo",r.nombre,r.area,r.puesto+" • "+r.turno,r.estado,r.id]):[]),...(fo!=="leg"?D.pue.map(r=>["pue","Puesto",r.nombre,r.area,"Reporta a "+r.reporta,"Perfil activo",r.id]):[])];
+ $("tb").innerHTML=rows.map(r=>`<tr><td><span class="tag">${r[1]}</span></td><td>${esc(r[2])}</td><td>${esc(r[3])}</td><td>${esc(r[4])}</td><td>${esc(r[5])}</td><td><button class="np" onclick="del('${r[0]}',${r[6]})">✕</button></td></tr>`).join("");
+ $("vac").classList.toggle("hide",rows.length>0)}
+function csv(){
+ const h=["Origen","Titular/Puesto","Área","Detalle","Estado"];
+ const rows=[...D.leg.map(r=>["Legajo",r.nombre,r.area,r.puesto+" - "+r.turno,r.estado]),...D.pue.map(r=>["Puesto",r.nombre,r.area,"Reporta a "+r.reporta,"Perfil activo"])];
+ const t=[h,...rows].map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(",")).join("\n");
+ const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+t],{type:"text/csv"}));a.download="nominas_ume.csv";a.click()}
+function listCV(){
+ $("l-cv").innerHTML=D.cv.map(r=>{const tot=((+r.tec+ +r.hum)/2).toFixed(1);
+  const msg=encodeURIComponent(`Hola ${r.nombre}, desde RR.HH. de UME (UNCAUS) te invitamos a una entrevista presencial para el puesto ${r.puesto}. Cmte. Fernández 755, Sáenz Peña. Por favor confirmá tu disponibilidad.`);
+  return `<div class="card"><b>${esc(r.nombre)}</b> <span class="tag">${esc(r.estado)}</span><div class="mut">${esc(r.puesto)} • ${esc(r.cel)} • ${esc(r.mail)}</div><p>${esc(r.ant)}</p><p>Técnico <b>${r.tec}</b> • Humano <b>${r.hum}</b> • Promedio <b>${tot}</b></p><div class="row np"><a href="https://wa.me/${r.cel.replace(/\D/g,"")}?text=${msg}" target="_blank" rel="noopener"><button>Citar por WhatsApp</button></a><button onclick="del('cv',${r.id})">Eliminar</button></div></div>`}).join("")}
+function listInd(){
+ $("l-ind").innerHTML=D.ind.map(r=>`<div class="card"><b>${esc(r.nombre)}</b><div class="mut">${esc(r.puesto)} • Ingreso ${esc(r.ingreso)} • Tutor: ${esc(r.tutor)}</div>${CHK.map((c,i)=>`<label style="margin:6px 0;color:var(--tx)"><input type="checkbox" style="width:auto" ${r.chk.includes(i)?"checked":""} onchange="tog(${r.id},${i})"> ${c}</label>`).join("")}<div class="row np"><button onclick="print()">Imprimir constancia</button><button onclick="del('ind',${r.id})">Eliminar</button></div></div>`).join("")}
+function tog(id,i){const r=D.ind.find(x=>x.id===id);r.chk=r.chk.includes(i)?r.chk.filter(x=>x!==i):[...r.chk,i];put("ind",r)}
+const STOP=new Set("para como con los las del una uno unos unas por que sus son ser este esta esto entre sobre desde hasta cada todo toda otros otras tambien debe deben tener tiene area puesto personal servicio trabajo".split(" "));
+const norm=s=>s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+const kw=s=>[...new Set(norm(s).split(/[^a-z0-9]+/).filter(w=>w.length>3&&!STOP.has(w)))];
+const hit=(ws,cv)=>{const m=[],x=[];ws.forEach(w=>(cv.includes(w.slice(0,Math.max(4,w.length-2)))?m:x).push(w));return[m,x]};
+let B=null;
+let BFILE="";
+async function leerCV(f){
+ if(!f)return;const m=$("bm"),n=f.name.toLowerCase();BFILE=f.name.replace(/\.[^.]+$/,"").replace(/[_-]+/g," ");m.textContent="Leyendo "+f.name+"…";
+ try{let t="";
+  if(n.endsWith(".pdf")){
+   if(!window.pdfjsLib)throw Error("lib");
+   pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+   const d=await pdfjsLib.getDocument({data:new Uint8Array(await f.arrayBuffer())}).promise;
+   for(let i=1;i<=d.numPages;i++){const c=await(await d.getPage(i)).getTextContent();t+=c.items.map(x=>x.str).join(" ")+"\n"}
+  }else if(n.endsWith(".docx")){if(!window.mammoth)throw Error("lib");t=(await mammoth.extractRawText({arrayBuffer:await f.arrayBuffer()})).value}
+  else if(n.endsWith(".txt")||n.endsWith(".md"))t=await f.text();
+  else throw Error("fmt");
+  t=t.replace(/\s+/g," ").trim();
+  if(t.length<30){m.textContent="No se pudo leer texto (puede ser un PDF escaneado). Pegá el texto del CV abajo.";$("bf").value="";return}
+  $("bt").value=t;m.textContent="Leído: "+f.name+" ("+t.length+" caracteres)";
+  if(D.pue.length)botRun();else m.textContent+=". Primero cargá un puesto en Relevamiento de Puestos.";
+ }catch(e){m.textContent=e.message==="fmt"?"Formato no admitido. Usá PDF, DOCX o TXT.":"No se pudo leer el archivo. Pegá el texto del CV abajo."}
+ $("bf").value=""}
+function botSel(){const s=$("bp"),v=s.value;s.innerHTML=D.pue.length?D.pue.map(p=>`<option value="${p.id}">${esc(p.nombre)} — ${esc(p.area)}</option>`).join(""):`<option value="">Primero cargá un puesto en Relevamiento de Puestos</option>`;if(v)s.value=v}
+function botRun(){
+ const p=D.pue.find(x=>x.id==$("bp").value),t=$("bt").value.trim();
+ if(!p){alert("Primero relevá un puesto.");return}
+ if(t.length<30){alert("Pegá el texto del CV.");return}
+ const cv=norm(t),[tm,tx]=hit(kw(p.tareas+" "+p.req),cv),[hm,hx]=hit(kw(p.comp),cv);
+ const tt=tm.length+tx.length,ht=hm.length+hx.length;
+ const tec=Math.max(1,Math.round(10*tm.length/(tt||1))),hum=Math.max(1,Math.round(10*hm.length/(ht||1))),av=(tec+hum)/2;
+ const v=av>=7?["Preseleccionar","Preseleccionado"]:av>=4?["Revisar manualmente",null]:["Banco de datos","Banco de datos"];
+ B={p,t,tec,hum,est:v[1]};
+ const L=a=>a.length?a.slice(0,12).map(esc).join(", "):"—";
+ $("br").innerHTML=`<hr><p>Técnico <b>${tec}/10</b> • Humano <b>${hum}/10</b> • <span class="tag">${v[0]}</span></p><p><b>Coincide:</b> ${L([...tm,...hm])}</p><p><b>No aparece:</b> ${L([...tx,...hx])}</p><button onclick="botUse()">Pasar al formulario</button><p class="mut">Sugerencia automática por coincidencia de palabras. La decisión final es de RR.HH. y de la entrevista presencial.</p>`}
+function botUse(){
+ const f=$("f-cv"),s=n=>f.querySelector(`[name=${n}]`);
+ s("puesto").value=B.p.nombre;s("tec").value=B.tec;s("hum").value=B.hum;s("ant").value=B.t.slice(0,300);if(B.est)s("estado").value=B.est;
+ if(BFILE)s("nombre").value=BFILE;s("nombre").focus();f.scrollIntoView({behavior:"smooth"})}
+function render(){showLogin();["leg","pue","cv","ind"].forEach(k=>$("k-"+k).textContent=D[k].length);tabla();listCV();listInd();botSel();listUsr();
+ 
+ $("nav").children[NAV.findIndex(n=>n[0]==="usr")].classList.toggle("hide",ROL!=="RR.HH.")}
+const EJ={
+leg:{nombre:"María Fernanda Gómez",dni:"30123456",cuil:"27301234565",tel:"3644123456",mail:"mgomez@ume.uncaus.edu.ar",area:AREAS[0],puesto:"Enfermera de guardia",mat:"MP 1234",turno:TURNOS[0],ingreso:"2026-03-02",os:OS[0],emerg:"Carlos Gómez - 3644654321",estado:EST[0]},
+pue:{nombre:"Enfermero/a de Guardia",area:AREAS[0],reporta:"Jefatura de Enfermería",objetivo:"Brindar atención de enfermería segura y humanizada a pacientes en guardia.",tareas:"Triage, administración de medicación, registro en historia clínica, control de signos vitales, RCP.",req:"Título de enfermería, matrícula habilitante, RCP vigente, bioseguridad.",comp:"Empatía, trabajo en equipo, responsabilidad, comunicación, vocación de servicio."},
+cv:{nombre:"Lucía Benítez",cel:"3644987654",mail:"lucia@mail.com",puesto:"Enfermero/a de Guardia",ant:"Enfermera universitaria con 3 años en guardia: RCP vigente, triage, historia clínica, trabajo en equipo.",tec:"8",hum:"7",estado:"Preseleccionado"},
+ind:{nombre:"María Fernanda Gómez",puesto:"Enfermera - Guardia 24hs",ingreso:"2026-03-02",tutor:"Lic. Roberto Acuña"}};
+function ej(k){for(const n in EJ[k]){const e=$("f-"+k).querySelector(`[name=${n}]`);if(e)e.value=EJ[k][n]}}
+async function hp(pw,salt){const k=await crypto.subtle.importKey("raw",new TextEncoder().encode(pw),"PBKDF2",false,["deriveBits"]);const b=await crypto.subtle.deriveBits({name:"PBKDF2",salt:new TextEncoder().encode(salt),iterations:100000,hash:"SHA-256"},k,256);return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("")}
+const newSalt=()=>[...crypto.getRandomValues(new Uint8Array(8))].join("-");
+async function crearU(){
+ const n=$("un").value.trim(),e=$("ue").value.trim().toLowerCase(),p=$("up").value;
+ if(!n||!/^\S+@\S+\.\S+$/.test(e)||p.length<8){alert("Completá nombre, un correo válido y una contraseña de al menos 8 caracteres.");return}
+ if(D.usr.some(x=>(x.email||"")===e)){alert("Ese correo ya tiene usuario.");return}
+ const salt=newSalt(),r={id:"u"+Date.now(),nombre:n,email:e,rol:$("ur").value,salt,hash:await hp(p,salt)};
+ if(!DB)D.usr.unshift(r);put("usr",r);["un","ue","up"].forEach(i=>$(i).value="");render();alert("Usuario creado: "+e)}
+async function clave(id){const p=prompt("Nueva contraseña (mín. 8 caracteres)");if(!p||p.length<8)return;const r=D.usr.find(x=>x.id===id);r.salt=newSalt();r.hash=await hp(p,r.salt);put("usr",r);alert("Contraseña actualizada")}
+function demoMode(){DEMO=true;DB=null;const e=EJ;
+ D={leg:[{id:1,...e.leg},{id:2,...e.leg,nombre:"Juan Carlos Díaz",puesto:"Médico de guardia",estado:EST[1]}],pue:[{id:3,...e.pue}],cv:[{id:4,...e.cv}],ind:[{id:5,...e.ind,chk:[0,1]}],usr:[]};
+ ROL="";$("sub").textContent="Modo presentación • datos de ejemplo";enter();render()}
+const SEED={id:"u0",nombre:"Administrador UME",email:"admin@ume.uncaus.edu.ar",rol:"RR.HH.",salt:"23-195-39-123-178-214-203-1",hash:"70283be00daa8ef4009468f1d4f41228930fc8b1d53f9faed6939ed1f3f5b310"};
+function showLogin(){const none=!D.usr.some(x=>x.hash),pe=!!PEND;$("setup").classList.toggle("hide",!LOADED||!none||pe);$("lform").classList.toggle("hide",!LOADED||none||pe);$("chg").classList.toggle("hide",!pe)}
+async function cambiarPw(){const p=$("cp").value;if(p.length<8){$("ce").classList.remove("hide");return}const u=PEND;u.salt=newSalt();u.hash=await hp(p,u.salt);delete u.cambiar;await put("usr",u);PEND=null;ROL=u.rol;enter();render()}
+async function setupAdmin(){
+ const n=$("sn").value.trim(),e=$("se").value.trim().toLowerCase(),p=$("sp").value;
+ if(!n||!/^\S+@\S+\.\S+$/.test(e)||p.length<8){alert("Completá nombre, un correo válido y una contraseña de al menos 8 caracteres.");return}
+ if(D.usr.some(x=>x.hash)){alert("Ya existe un administrador. Ingresá con tu usuario.");return}
+ const salt=newSalt(),r={id:"u"+Date.now(),nombre:n,email:e,rol:"RR.HH.",salt,hash:await hp(p,salt)};
+ if(!DB)D.usr.unshift(r);await put("usr",r);ROL="RR.HH.";enter();render()}
+async function login(){
+ const e=lu.value.trim().toLowerCase(),u=D.usr.find(x=>(x.email||"")===e&&x.hash);let ok=false;
+ if(u)ok=(await hp(lp.value,u.salt))===u.hash;
+ if(ok&&u&&u.cambiar){PEND=u;render();return}if(ok){ROL=u?u.rol:"RR.HH.";enter();render()}else le.classList.remove("hide")}
+function listUsr(){$("ulist").innerHTML=D.usr.length?D.usr.map(r=>`<div class="row"><span style="flex:1"><b>${esc(r.nombre)}</b> <span class="tag">${esc(r.rol)}</span><div class="mut">${esc(r.email)}</div></span><button onclick="clave('${r.id}')">Cambiar clave</button> <button onclick="del('usr','${r.id}')">Quitar</button></div>`).join(""):'<p class="mut">Aún no hay usuarios. Mientras esté vacío, solo quien administra el portal puede configurarlo.</p>'}
+["leg","pue","cv","ind"].forEach(k=>{buildForm(k);for(const n in EJ[k]){const e=$("f-"+k).querySelector(`[name=${n}]`);if(e&&e.tagName!=="SELECT"&&e.type!=="date")e.placeholder="Ej: "+EJ[k][n]}});render();
+(async()=>{try{
+ const u=await claude.use("user"),d=await claude.use("db");
+ if(!u||!d)return;
+ U=u;DB=d;LOADED=false;ME=await u.id();ADMIN=await u.canEdit();
+ D={leg:[],pue:[],cv:[],ind:[],usr:[]};
+ ["leg","pue","cv","ind","usr"].forEach(k=>DB.collection(k).onSnapshot(sn=>{if(DEMO)return;D[k]=sn.docs.map(x=>x.data()).sort((a,b)=>a.id<b.id?1:-1);if(k==="usr"){LOADED=true;if(!D.usr.length)put("usr",SEED)}render()}));
+ render();
+}catch(e){LOADED=true;if(!D.usr.some(x=>x.hash)){D.usr.push({...SEED});save()}render()}})();
+</script>
+</body></html>
