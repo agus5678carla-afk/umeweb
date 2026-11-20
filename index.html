@@ -1,4 +1,4 @@
-<!DOCTYPE html>
++<!DOCTYPE html>
 <html lang="es"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>UME • Unidad Médica Educativa (UNCAUS) | Sistema de RR.HH.</title>
@@ -108,7 +108,8 @@ ind:[["nombre","Nombre del colaborador *","text"],["puesto","Puesto y área *","
 const CHK=["Recorrido por las instalaciones","Normas de bioseguridad","Entrega de credencial y uniforme","Presentación al equipo y tutor","Revisión de legajo y matrícula","Seguimiento a los 30 días"];
 const NAV=[["portada","Portada"],["leg","Carga de Legajos"],["nom","Nóminas"],["pue","Relevamiento de Puestos"],["cv","Filtración de CVs"],["ind","Plan de Inducción"],["usr","Crear Usuarios"],["guia","Guía de Uso"],["desp","Despliegue Online"]];
 let D={leg:[],pue:[],cv:[],ind:[],usr:[]},DB=null,U=null,ME=null,ADMIN=false,ROL="",LOADED=false,DEMO=false,PEND=null;
-try{D=Object.assign(D,JSON.parse(localStorage.getItem("ume")||"{}"))}catch(e){}
+try{D=Object.assign(D,JSON.parse(localStorage.getItem("ume")||"{}"))}catch(e){LOADED=true;save();render()}})();
+
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 function save(){try{localStorage.setItem("ume",JSON.stringify(D))}catch(e){}}
@@ -213,7 +214,7 @@ async function clave(id){const p=prompt("Nueva contraseña (mín. 8 caracteres)"
 function demoMode(){DEMO=true;DB=null;const e=EJ;
  D={leg:[{id:1,...e.leg},{id:2,...e.leg,nombre:"Juan Carlos Díaz",puesto:"Médico de guardia",estado:EST[1]}],pue:[{id:3,...e.pue}],cv:[{id:4,...e.cv}],ind:[{id:5,...e.ind,chk:[0,1]}],usr:[]};
  ROL="";$("sub").textContent="Modo presentación • datos de ejemplo";enter();render()}
-const SEED={id:"u0",nombre:"Administrador UME",email:"admin@ume.uncaus.edu.ar",rol:"RR.HH.",salt:"23-195-39-123-178-214-203-1",hash:"70283be00daa8ef4009468f1d4f41228930fc8b1d53f9faed6939ed1f3f5b310"};
+const SEED={id:"ministrador UME",email:"admin@ume.uncaus.edu.ar",rol:"RR.HH.",salt:"23-195-39-123-178-214-203-1",hash:"70283be00daa8ef4009468f1d4f41228930fc8b1d53f9faed6939ed1f3f5b310"};
 function showLogin(){const none=!D.usr.some(x=>x.hash),pe=!!PEND;$("setup").classList.toggle("hide",!LOADED||!none||pe);$("lform").classList.toggle("hide",!LOADED||none||pe);$("chg").classList.toggle("hide",!pe)}
 async function cambiarPw(){const p=$("cp").value;if(p.length<8){$("ce").classList.remove("hide");return}const u=PEND;u.salt=newSalt();u.hash=await hp(p,u.salt);delete u.cambiar;await put("usr",u);PEND=null;ROL=u.rol;enter();render()}
 async function setupAdmin(){
